@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+      <groupId>com.opitzconsulting.rylc</groupId>
+      <artifactId>rylc-backend-parent</artifactId>
+      <version>0.3.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>rylc-backend-war</artifactId>
+    <packaging>war</packaging>
+
+    <name>RYLC Backend WAR</name>
+
+    <properties>
+        <jetty.contextPath>/rylc-backend</jetty.contextPath>
+        <jetty.port>8484</jetty.port>
+        <jetty.stopPort>9494</jetty.stopPort>
+        <jetty.version>7.6.4.v20120524</jetty.version>
+    </properties>
+
+    <build>
+        <finalName>rylc-backend</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>${jetty.version}</version>
+                <configuration>
+                    <scanIntervalSeconds>10</scanIntervalSeconds>
+                    <stopKey>STOPJETTY</stopKey>
+                    <stopPort>${jetty.stopPort}</stopPort>
+                    <connectors>
+                        <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+                            <port>${jetty.port}</port>
+                        </connector>
+                    </connectors>
+                    <webAppConfig>
+                        <contextPath>${jetty.contextPath}</contextPath>
+                    </webAppConfig>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+      <dependency>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>rylc-backend-jar</artifactId>
+          <version>${project.version}</version>
+      </dependency>
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>3.1</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>integration</id>
+            <properties>
+                <!-- Datasource Properties -->
+                <jdbc.driverClassName>org.h2.Driver</jdbc.driverClassName>
+                <jdbc.url>jdbc:h2:tcp://localhost/rylc-backend</jdbc.url>
+                <jdbc.username>rylc</jdbc.username>
+                <jdbc.password>rylc</jdbc.password>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>integration-tests</id>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <configuration>
+                                    <includes>
+                                        <include>**/*IntegrationTest.java</include>
+                                    </includes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.7</version>
+                        <executions>
+                            <execution>
+                                <id>start-db</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <java classname="org.h2.tools.Server"
+                                              classpathref="maven.runtime.classpath"
+                                              fork="true" spawn="true">
+                                            <arg line="-tcp -baseDir ./var"/>
+                                        </java>
+                                    </target>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>stop-db</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <java classname="org.h2.tools.Server"
+                                              classpathref="maven.runtime.classpath">
+                                            <arg line="-tcpShutdown tcp://localhost:9092"/>
+                                        </java>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.mortbay.jetty</groupId>
+                        <artifactId>jetty-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>start-jetty</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <scanIntervalSeconds>0</scanIntervalSeconds>
+                                    <daemon>true</daemon>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>stop-jetty</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>stop</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>
