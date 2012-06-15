@@ -1,4 +1,9 @@
+# IntelliJ IDEA
 .idea
-target
-var
 *.iml
+
+# Maven
+target
+
+# Misc
+var
