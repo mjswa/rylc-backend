@@ -158,9 +158,9 @@ public class BootstrapDataPopulator implements InitializingBean {
 
     private void createRentals() {
         if (cars != null && cars.size() > 2) {
-        	entityRepository.persist(new Rental(DateUtil.toDate("2011-05-25T15:00:00.000Z"), DateUtil.toDate("2011-05-28T21:30:00.000Z"), cars.get(0), customer));
-        	entityRepository.persist(new Rental(DateUtil.toDate("2011-07-05T09:45:00.000Z"), DateUtil.toDate("2011-07-05T19:15:00.000Z"), cars.get(1), customer));
-        	entityRepository.persist(new Rental(DateUtil.toDate("2011-08-12T07:00:00.000Z"), DateUtil.toDate("2011-09-02T18:00:00.000Z"), cars.get(2), customer));
+        	entityRepository.persist(new Rental(DateUtil.toDate("2012-06-04T15:00:00.000Z"), DateUtil.toDate("2012-06-04T21:30:00.000Z"), cars.get(0), customer));
+        	entityRepository.persist(new Rental(DateUtil.toDate("2012-06-08T09:45:00.000Z"), DateUtil.toDate("2011-06-09T19:15:00.000Z"), cars.get(1), customer));
+        	entityRepository.persist(new Rental(DateUtil.toDate("2012-06-11T07:00:00.000Z"), DateUtil.toDate("2012-06-11T18:00:00.000Z"), cars.get(2), customer));
         }
     }
 
